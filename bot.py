@@ -126,7 +126,7 @@ async def add1rdr0p(ctx):
             await ctx.message.channel.send('```This is not a valid ETH address.```'.format(FIELDS,FIELDS-1))
 
 
-@tasks.loop(seconds=2)
+@tasks.loop(seconds=60)
 async def check_release():
 
     for guild in client.guilds:
