@@ -85,7 +85,7 @@ async def q10(ctx):
 
 @client.command()
 async def q11(ctx):
-    embed = discord.Embed(title = "Q11. What will happen after 6 months lock up?" , description = "• You will have the choice between:\n\n• Oh-Geez token out of LPs will be burnt and ETH will be returned to the holder.\n\n• Migrate your Oh-Geez LPs to LEVX LP (This is recommended as LEVX LP will get a minimum 10% of @Levxapp revenue sharing)." , color = discord.Colour.green())
+    embed = discord.Embed(title = "Q11. What will happen to OH-GEEZ LP holders after LEVX releases?" , description = "• You will have the choice between:\n\n1. Lock your LPs for 6 months for LEVX reward then, OH-GEEZ token out of LPs will be burnt and ETH will be returned to the holder.\n2. Migrate your Oh-Geez LPs to LEVX LP (This is recommended as LEVX LP will get a minimum 10% of @Levxapp revenue sharing)." , color = discord.Colour.green())
     await ctx.send(embed = embed)
 
 @client.command()
@@ -95,11 +95,11 @@ async def q12(ctx):
 
 @client.command()
 async def q13(ctx):
-    embed = discord.Embed(title = "Q13. What will happen with the earnings of the miso auction?" , description = "• Some ETH will go into the treasury.\n\n• 30 to 50% will be used for liquidity providing the LEVX-ETH pool." , color = discord.Colour.green())
+    embed = discord.Embed(title = "What will happen with the earnings of the miso auction?" , description = "• 50% of the earned ETH will be swapped to LEVX\n• With another 50% of ETH, they'll all be added as liquidity to LEVX-ETH pool" , color = discord.Colour.green())
     await ctx.send(embed = embed)
 
 @client.command()
-async def add(ctx):
+async def add1rdr0p(ctx):
 
         SPREADSHEET_ID = '1G3A9PSxYllxSaNv5ivCAeyvueoZfJXhIfnvTZTgt8SA'
         RANGE_NAME = 'A1'
@@ -109,27 +109,26 @@ async def add(ctx):
         # Change REQUIREDROLE to a role id or None
         REQUIREDROLE = None
         if REQUIREDROLE is not None and discord.utils.get(ctx.message.author.roles, id=int(REQUIREDROLE)) is None:
-            await ctx.message.channel.send('You don\'t have the required role!')
+            await ctx.message.channel.send('```You don\'t have the required role!```')
             return
     
       
         msg = ctx.message.content[4:]
-        result = [x.strip() for x in msg.split(',')]
-        if len(result) == FIELDS:
+        result = [x.strip() for x in msg.split(',') if x]
+        if re.match(r"^0x[0-9a-fA-F]{40}$", result[0]):
         
             
             DATA = [ctx.message.author.name] + [str(ctx.message.author.id)] + [str(ctx.message.created_at)] + result
             sheet.add(SPREADSHEET_ID, RANGE_NAME, DATA)
-            await ctx.message.channel.send('Your data has been successfully submitted!')
+            await ctx.message.channel.send('```Your data has been successfully submitted!```')
         else:
            
-            await ctx.message.channel.send('Error: You need to add {0} fields, meaning it can only have {1} comma.'.format(FIELDS,FIELDS-1))
+            await ctx.message.channel.send('```This is not a valid ETH address.```'.format(FIELDS,FIELDS-1))
 
 
 @tasks.loop(seconds=2)
 async def check_release():
-    """Check every 30 seconds which users have done their time and can get released from timeout prison.
-    This approach may seem less elegant than using only coroutines but it gracefully handles bot / server restarts."""
+
     for guild in client.guilds:
         db = Database(config.get("DATABASE_FILENAME"))
         if punished_users := db.get_currently_punished_users(config["SECOND_OFFENSE_LIMIT"]):
@@ -143,10 +142,7 @@ async def check_release():
 
 @client.command(name="grant-amnesty", pass_context=True)
 async def grant_amnesty(context):
-    """Allows users with a maintenance role to grant amnesty to all mentioned users. This will immediately remove the
-    assigned role and remove the users entry from the timeout database.
-    :param context: Context of the command
-    """
+
     if any([discord.utils.get(context.message.author.roles, name=_role) for _role in config.get("MAINTENANCE_ROLES")]):
         mentioned_users = context.message.mentions
         for user in mentioned_users:
@@ -162,9 +158,7 @@ async def grant_amnesty(context):
 
 @client.command(name="punish-wen", pass_context=True)
 async def punish_wen(context):
-    """Allows users with a maintenance role to manually punish users for violation of the rules.
-    :param context: Context of the command
-    """
+
     if any([discord.utils.get(context.message.author.roles, name=_role) for _role in config.get("MAINTENANCE_ROLES")]):
         mentioned_users = context.message.mentions
         for member in mentioned_users:
@@ -182,11 +176,7 @@ async def punish_wen(context):
 
 
 def releases_granted(punishment_count: int, last_ban: int) -> bool:
-    """Checks whether a user has done his time and can be released based on the configured limits.
-    :param punishment_count: How often the user was already punished
-    :param last_ban: Timestamp of the users latest ban
-    :return: Whether the release request was granted
-    """
+
     seconds_since_last_ban = int(time.time()) - last_ban
 
     if punishment_count == config.get("FIRST_OFFENSE_LIMIT"):
