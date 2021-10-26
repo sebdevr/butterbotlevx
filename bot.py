@@ -85,7 +85,7 @@ async def q10(ctx):
 
 @client.command()
 async def q11(ctx):
-    embed = discord.Embed(title = "Q11. What will happen to OH-GEEZ LP holders after LEVX releases?" , description = "• You will have the choice between:\n\n1. Lock your LPs for 6 months for LEVX reward then, OH-GEEZ token out of LPs will be burnt and ETH will be returned to the holder.\n2. Migrate your Oh-Geez LPs to LEVX LP (This is recommended as LEVX LP will get a minimum 10% of @Levxapp revenue sharing)." , color = discord.Colour.green())
+    embed = discord.Embed(title = "Q11. What will happen to OH-GEEZ LP holders after LEVX releases?" , description = "• You will have the choice between:\n\n1. Lock your LPs for 6 months for LEVX reward then, OH-GEEZ token out of LPs will be burnt and ETH will be returned to the holder.\n2. Migrate your Oh-Geez LPs to LEVX LP (This is recommended as LEVX LP will get a minimum 33.3% of @Levxapp revenue sharing)." , color = discord.Colour.green())
     await ctx.send(embed = embed)
 
 @client.command()
